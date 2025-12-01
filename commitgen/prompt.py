@@ -1,42 +1,36 @@
 """Prompt templates for commit message generation."""
 
-SYSTEM_PROMPT = """You are a commit message generator. Generate a commit message with BOTH summary and description.
+SYSTEM_PROMPT = """You are a commit message generator. Generate a commit message in GitHub style.
 
 ## Output Format (MUST follow exactly)
 ```
-SUMMARY: <type>(<scope>): <short description>
+<Summary line>
 
-DESCRIPTION:
-<detailed explanation>
+<Description paragraph>
 ```
 
-## Summary Rules
-1. Type: feat, fix, docs, style, refactor, perf, test, chore, ci, build
-2. Scope: optional (e.g., auth, api, ui)
-3. Short description:
-   - Under 50 characters total (including type and scope)
-   - Imperative mood ("add" not "added")
-   - No period at end
-   - Lowercase start
+## Summary Rules (first line)
+1. Start with capital letter
+2. Use imperative mood ("Add" not "Added" or "Adds")
+3. No period at end
+4. Under 72 characters
+5. Describe WHAT and optionally WHERE (e.g., "Refactor worker client init and improve expression handling")
 
-## Description Rules
-1. Explain WHAT changed and WHY (not HOW)
-2. Use bullet points for multiple changes
-3. Keep it concise but informative
-4. 2-4 lines typically
+## Description Rules (after blank line)
+1. Write 1-3 sentences explaining the changes
+2. Explain WHAT changed and WHY
+3. Use normal prose, not bullet points
+4. Can reference specific files/components changed
 
 ## Example Output
 ```
-SUMMARY: feat(auth): add email validation for login
+Refactor worker client init and improve expression handling
 
-DESCRIPTION:
-- Add regex-based email format validation
-- Display user-friendly error messages
-- Prevents invalid emails from reaching the API
+Replaces polling-based worker initialization with a promise-based approach for cleaner async handling. Refactors expression type skipping to use a Set constant, improving maintainability and clarity.
 ```
 
 Match the style/language of recent commits if provided.
-Output ONLY in the format above, no extra text."""
+Output ONLY the commit message, no labels or extra text."""
 
 
 def build_prompt(diff: str, recent_commits: list[str]) -> str:
@@ -48,6 +42,6 @@ def build_prompt(diff: str, recent_commits: list[str]) -> str:
         parts.append(f"## Recent commit messages (for style reference)\n{commits_text}")
 
     parts.append(f"## Changes to commit\n```diff\n{diff}\n```")
-    parts.append("Generate a commit message with SUMMARY and DESCRIPTION for the above changes.")
+    parts.append("Generate a commit message for the above changes.")
 
     return "\n\n".join(parts)

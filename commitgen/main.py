@@ -33,13 +33,13 @@ def main(context_depth: int) -> None:
     user_prompt = build_prompt(diff, recent_commits)
 
     try:
-        click.echo("Generating commit message...\n")
+        click.echo("Generating commit message...")
         message = generate_commit_message(user_prompt)
 
-        # Parse and display the result
-        click.echo("=" * 50)
+        # Display result with blank line for easy copying
+        click.echo("")
         click.echo(message)
-        click.echo("=" * 50)
+        click.echo("")
     except ValueError as e:
         click.echo(f"Error: {e}", err=True)
         raise SystemExit(1)
